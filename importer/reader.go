@@ -46,6 +46,8 @@ func Parse(inputPath string, newToSS bool) (data []SSFormat, err error) {
 		r = NewReader(f, '\t')
 	}
 
+	// remove formatting from the file to make things cleaner.
+	replacer := strings.NewReplacer("[", "", "]", "", "/", "")
 	for {
 		record, err := r.Read()
 		// Stop at EOF.
@@ -56,23 +58,18 @@ func Parse(inputPath string, newToSS bool) (data []SSFormat, err error) {
 		var item SSFormat
 
 		if newToSS {
-			replacer := strings.NewReplacer("[", "", "]", "")
 			item = SSFormat{
 				Column1: replacer.Replace(record[1]),
-				Column2: record[0],
-				Column3: strings.Replace(strings.Join(record[2:], " "), "/", "", -1),
+				Column2: record[0] + " " + replacer.Replace(strings.Join(record[2:], " ")),
 			}
 		} else {
 			item = SSFormat{
 				Column1: record[0],
 				Column2: record[1],
 			}
+			// May not have already been through the application and have history saved.
 			if len(record) > 2 {
 				item.Column3 = record[2]
-			}
-			// May not have already been through the application and have history saved.
-			if len(record) > 3 {
-				item.Column4 = record[3]
 			}
 		}
 
