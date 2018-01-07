@@ -21,6 +21,7 @@ type Parser interface {
 type Args struct {
 	Input *string
 	Ouput *string
+	New   *bool
 }
 
 func (a *Args) validateRequiredArguments() error {
@@ -34,6 +35,7 @@ func (a *Args) validateRequiredArguments() error {
 func (a *Args) setFlagArguments() {
 	a.Input = flag.String("input", "", "Input path. (Required)")
 	a.Ouput = flag.String("output", "", "Output path")
+	a.New = flag.Bool("new", false, "Is new to SS or not")
 }
 
 // Parse will take the user's commandline args and parse them out into a usable
