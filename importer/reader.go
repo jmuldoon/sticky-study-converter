@@ -2,7 +2,6 @@ package importer
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -55,9 +54,11 @@ func Parse(inputPath string, newToSS bool) (data []SSFormat, err error) {
 		}
 		// Store record, if new swap kanji to second, else keep
 		var item SSFormat
+
 		if newToSS {
+			replacer := strings.NewReplacer("[", "", "]", "")
 			item = SSFormat{
-				Column1: record[1],
+				Column1: replacer.Replace(record[1]),
 				Column2: record[0],
 				Column3: strings.Replace(strings.Join(record[2:], " "), "/", "", -1),
 			}
@@ -74,8 +75,6 @@ func Parse(inputPath string, newToSS bool) (data []SSFormat, err error) {
 				item.Column4 = record[3]
 			}
 		}
-
-		fmt.Println(item)
 
 		// Append the next item to the list
 		data = append(data, item)
